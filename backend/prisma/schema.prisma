@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum RefundStatus {
+  PENDING
+  APPROVED
+  DENIED
+  ESCALATED
+}
+
+enum DecisionSource {
+  POLICY
+  AI
+  HUMAN
+}
+
+model Customer {
+  id             String          @id @default(cuid())
+  name           String
+  email          String          @unique
+  createdAt      DateTime        @default(now())
+  orders         Order[]
+  refundRequests RefundRequest[]
+
+  @@map("customers")
+}
+
+model Order {
+  id            String          @id @default(cuid())
+  customerId    String
+  orderNumber   String          @unique
+  orderDate     DateTime
+  totalAmount   Float
+  itemName      String
+  finalSale     Boolean         @default(false)
+  damaged       Boolean         @default(false)
+  incorrectItem Boolean         @default(false)
+
+  customer       Customer        @relation(fields: [customerId], references: [id])
+  refundRequests RefundRequest[]
+
+  @@index([customerId])
+  @@map("orders")
+}
+
+model RefundRequest {
+  id              String         @id @default(cuid())
+  customerId      String
+  orderId         String
+  reason          String
+  customerMessage String
+  status          RefundStatus   @default(PENDING)
+  decisionSource  DecisionSource?
+  decisionReason  String?
+  aiResponse      String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  customer  Customer   @relation(fields: [customerId], references: [id])
+  order     Order      @relation(fields: [orderId], references: [id])
+  auditLogs AuditLog[]
+
+  @@index([customerId])
+  @@index([orderId])
+  @@index([status])
+  @@map("refund_requests")
+}
+
+model AuditLog {
+  id              String        @id @default(cuid())
+  refundRequestId String
+  event           String
+  details         String
+  createdAt       DateTime      @default(now())
+
+  refundRequest RefundRequest @relation(fields: [refundRequestId], references: [id])
+
+  @@index([refundRequestId])
+  @@map("audit_logs")
+}

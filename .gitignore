@@ -1,0 +1,10 @@
+node_modules/
+.env
+*.db
+*.db-journal
+dist/
+*.tsbuildinfo
+.agents/
+.claude/
+.cursor/
+.devin/
