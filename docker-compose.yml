@@ -1,1 +1,24 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "file:./dev.db"
+      OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
+    volumes:
+      - backend-data:/app
+    restart: unless-stopped
 
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  backend-data:
