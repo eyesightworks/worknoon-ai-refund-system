@@ -12,6 +12,8 @@ The system accepts customer refund requests, evaluates them against deterministi
 
 **GitHub:** https://github.com/eyesightworks/worknoon-ai-refund-system
 
+![WorkNoon Customer Portal](Screenshot.png)
+
 ---
 
 ## Features
